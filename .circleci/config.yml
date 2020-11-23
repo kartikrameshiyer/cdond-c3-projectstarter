@@ -96,8 +96,21 @@ jobs:
           command: |
             cd backend
             npm i 
-            npm install jest 
+            npm install jest-junit
             npm run test
+  scan-frontend:
+  <<: *defaults
+    steps:
+      # Checkout code from git
+      # Restore from cache
+      # Your job code here
+
+  scan-backend:
+    <<: *defaults
+    steps:
+      # Checkout code from git
+      # Restore from cache
+      # Your job code here
 workflows:
   default:
     jobs:
