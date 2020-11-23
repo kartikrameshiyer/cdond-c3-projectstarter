@@ -70,19 +70,18 @@ jobs:
       - save_cache:
           paths: [backend/node_modules]
           key: backend-build
-          
+
   test-frontend:
     <<: *defaults
     steps:
       - checkout
-      - run: 
+      - run:
           name: running unit test
           command: |
-              cd frontend
-              npm i 
-              npm run test
+            cd frontend
+            npm i 
+            npm run test
 
-      
       # Checkout code from git
       # Restore from cache
       # Your job code here
@@ -90,12 +89,12 @@ jobs:
   test-backend:
     <<: *defaults
     steps:
-      - run: 
-      name: running unit test
-      command: |
-          cd backend
-          npm i 
-          npm run test
+      - run:
+          name: running unit test
+          command: |
+            cd backend
+            npm i 
+            npm run test
 workflows:
   default:
     jobs:
