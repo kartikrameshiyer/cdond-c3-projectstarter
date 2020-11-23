@@ -126,7 +126,7 @@ jobs:
           name: auditing the packages
           command: |
             cd backend
-            npm audit --audit-level=critical
+            npm audit fix --audit-level=critical --force
         # Checkout code from git
         # Restore from cache
         # Your job code here
