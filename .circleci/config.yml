@@ -47,7 +47,7 @@ jobs:
           name: Build front-end
           command: |
             cd frontend
-            npnm i 
+            npm i 
             npm run build
 
       - save_cache:
@@ -70,16 +70,41 @@ jobs:
       - save_cache:
           paths: [backend/node_modules]
           key: backend-build
+          
+  test-frontend:
+    <<: *defaults
+    steps:
+      - checkout
+      - run: 
+          name: running unit test
+          command: |
+              cd frontend
+              npm i 
+              npm run test
 
+      
+      # Checkout code from git
+      # Restore from cache
+      # Your job code here
+
+  test-backend:
+    <<: *defaults
+    steps:
+      - run: 
+      name: running unit test
+      command: |
+          cd backend
+          npm i 
+          npm run test
 workflows:
   default:
     jobs:
       - build-frontend
       - build-backend
-      # - test-frontend:
-      #     requires: [build-frontend]
-      # - test-backend:
-      #     requires: [build-backend]
+      - test-frontend:
+          requires: [build-frontend]
+      - test-backend:
+          requires: [build-backend]
       # - scan-backend:
       #     requires: [build-backend]
       # - scan-frontend:
