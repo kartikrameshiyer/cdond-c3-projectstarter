@@ -141,6 +141,7 @@ jobs:
       - checkout
       - run:
           name: installing required software
+          command: |
             yum install tar -y
             yum install gzip -y
       - run:
