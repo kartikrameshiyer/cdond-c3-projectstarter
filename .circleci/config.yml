@@ -187,7 +187,9 @@ jobs:
       - add_ssh_keys:
           fingerprints:
             - "be:7c:52:8a:37:2c:d0:f5:3a:38:ca:ce:16:59:02:d4"
-      - run: cat project/.circleci/ansible/inventory.txt
+      - attach_workspace:
+          at: ~/.circleci/ansible/inventory.txt
+      - run: cat ~/.circleci/ansible/inventory.txt
       - run:
           name: Install dependencies
           command: |
@@ -197,12 +199,12 @@ jobs:
           name: Configure server
           command: |
             ansible-playbook -i project/.circleci/ansible/inventory.txt configure-server.yml
-
+      - destroy-environment
         # Here's where you will add some code to rollback on failure
 workflows:
   default:
     jobs:
-      #- deploy-infrastructure
+      - deploy-infrastructure
       - configure-infrastructure
 
       # - build-frontend
