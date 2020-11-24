@@ -171,7 +171,8 @@ jobs:
       - persist_to_workspace:
           root: ~/
           paths:
-            - project/.circleci/ansible/inventory.txt
+            - cdond-c3-projectstarter/.circleci/ansible/inventory.txt
+      - run: pwd
       - destroy-environment
       # Here's where you will add some code to rollback on failure
 
@@ -188,13 +189,15 @@ jobs:
           fingerprints:
             - "be:7c:52:8a:37:2c:d0:f5:3a:38:ca:ce:16:59:02:d4"
       - attach_workspace:
-          at: ~/.circleci/ansible/inventory.txt
-      - run: cat ~/.circleci/ansible/inventory.txt
+          at: ~/
+      - run: cat cdond-c3-projectstarter/.circleci/ansible/inventory.txt
+      - store_artifacts: # See circleci.com/docs/2.0/artifacts/ for more details.
+          path: /tmp/artifact-ip
+          destination: artifact-file
       - run:
           name: Install dependencies
           command: |
             apk add --update ansible
-
       - run:
           name: Configure server
           command: |
@@ -205,7 +208,9 @@ workflows:
   default:
     jobs:
       - deploy-infrastructure
-      - configure-infrastructure
+      - configure-infrastructure:
+          requires:
+            - deploy-infrastructure
 
       # - build-frontend
       # - build-backend
