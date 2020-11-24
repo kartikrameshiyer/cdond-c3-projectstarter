@@ -163,13 +163,13 @@ jobs:
       - run:
           name: Add back-end ip to ansible inventory
           command: |
-            aws ec2 describe-instances --query 'Reservations[*].Instances[*].[PublicIpAddress]' --filters "Name=tag:project,Values=udapeople" --output text >> ~/inventory.txt
-            cat ~/inventory.txt
+            aws ec2 describe-instances --query 'Reservations[*].Instances[*].[PublicIpAddress]' --filters "Name=tag:project,Values=udapeople" --output text >> ./.circleci/ansible/inventory.txt
+            cat ./.circleci/ansible/inventory.txt
 
       - persist_to_workspace:
-          root: ~/
+          root: .circleci/ansible/
           paths:
-            - project/.circleci/ansible/inventory.txt
+            - inventory.txt
       - run: pwd
       - run: cat ~/project/.circleci/ansible/inventory.txt
       - destroy-environment
@@ -188,8 +188,7 @@ jobs:
           fingerprints:
             - "be:7c:52:8a:37:2c:d0:f5:3a:38:ca:ce:16:59:02:d4"
       - attach_workspace:
-          at: ~/
-      - run: cat project/.circleci/ansible/inventory.txt
+          at: .circleci/ansible/
       - store_artifacts: # See circleci.com/docs/2.0/artifacts/ for more details.
           path: /tmp/artifact-ip
           destination: artifact-file
