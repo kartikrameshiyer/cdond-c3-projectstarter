@@ -215,7 +215,7 @@ jobs:
       - destroy-environment
   run-migrations:
     docker:
-      - image: circleci/node:13.8.0
+      - image: circleci/node:latest
       # Docker image here that supports NodeJS
     steps:
       - checkout
@@ -224,7 +224,6 @@ jobs:
           no_output_timeout: 10m
           command: |
             cd backend
-            npm i 
             touch dbmigrationresults
             npm run migrations > dbmigrationresults
       - run: cat dbmigrationresults
