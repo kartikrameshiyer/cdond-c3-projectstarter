@@ -53,7 +53,6 @@ jobs:
       - save_cache:
           paths: [frontend/node_modules]
           key: frontend-build
-
   build-backend:
     <<: *defaults
     steps:
@@ -70,7 +69,6 @@ jobs:
       - save_cache:
           paths: [backend/node_modules]
           key: backend-build
-
   test-frontend:
     <<: *defaults
     steps:
@@ -88,7 +86,6 @@ jobs:
       # Checkout code from git
       # Restore from cache
       # Your job code here
-
   test-backend:
     <<: *defaults
     steps:
@@ -115,7 +112,6 @@ jobs:
         # Checkout code from git
         # Restore from cache
         # Your job code here
-
   scan-backend:
     <<: *defaults
     steps:
@@ -130,7 +126,6 @@ jobs:
         # Checkout code from git
         # Restore from cache
         # Your job code here
-
   deploy-infrastructure:
     docker:
       - image: amazon/aws-cli
@@ -178,7 +173,6 @@ jobs:
       - run: cat ~/project/.circleci/ansible/inventory
       - destroy-environment
       # Here's where you will add some code to rollback on failure
-
   configure-infrastructure:
     docker:
       - image: python:3.7-alpine3.11
@@ -219,14 +213,35 @@ jobs:
             ansible-playbook -i .circleci/ansible/inventory .circleci/ansible/configure-server.yml
 
       - destroy-environment
+  run-migrations:
+    docker:
+      - image: python:3.7-alpine3.11
+      # Docker image here that supports NodeJS
+    steps:
+      # Checkout code from git
+      - run:
+          name: Run migrations
+          command: |
+            cd backend
+            npm i 
+            touch dbmigrationresults
+            npm run migrations > dbmigrationresults
+      - run: cat dbmigrationresults
+      # - run:
+      #     name: Send migration results to memstash
+      #     command: |
+      #       if grep
+      #       exit 1
+    # Here's where you will add some code to rollback on failure
+
 workflows:
   default:
     jobs:
-      - deploy-infrastructure
-      - configure-infrastructure:
-          requires:
-            - deploy-infrastructure
-
+      # - deploy-infrastructure
+      # - configure-infrastructure:
+      #     requires:
+      #       - deploy-infrastructure
+      - run-migrations
       # - build-frontend
       # - build-backend
       # - test-frontend:
