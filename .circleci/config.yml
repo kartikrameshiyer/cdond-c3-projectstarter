@@ -219,11 +219,11 @@ jobs:
       # Docker image here that supports NodeJS
     steps:
       - checkout
+      - run: cd backend && npm install
       - run:
           name: Run migrations
           no_output_timeout: 10m
           command: |
-            cd backend
             touch dbmigrationresults
             npm run migrations > dbmigrationresults
       - run: cat dbmigrationresults
