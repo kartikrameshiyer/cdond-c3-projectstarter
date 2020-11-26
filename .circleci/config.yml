@@ -228,22 +228,58 @@ jobs:
             cd backend 
             npm run migrations > dbmigrationresults
       - run: cat dbmigrationresults
+      - run:
+          name: results values
+          command: |
+            if grep "successfully" dbmigrationresults.txt
+            then 
+            curl -H "Content-Type: text/plain" -H "token: ${CIRCLE_WORKFLOW_ID:0:7}" --request PUT --data "true" https://api.memstash.io/values/<< pipeline.id >>_migrations
+            else
+            curl -H "Content-Type: text/plain" -H "token: ${CIRCLE_WORKFLOW_ID:0:7}" --request PUT --data "false" https://api.memstash.io/values/<< pipeline.id >>_migrations
+            fi
+      - destroy-environment
       # - run:
       #     name: Send migration results to memstash
       #     command: |
       #       if grep
       #       exit 1
     # Here's where you will add some code to rollback on failure
-
+  deploy-frontend:
+    docker:
+      - image: amazon/aws-cli
+    steps:
+      - checkout
+      - run:
+          name: Install dependencies
+          command: |
+            # your code here
+      - run:
+          name: Get backend url
+          command: |
+            export BACKEND_IP=$(aws ec2 describe-instances \
+            --query 'Reservations[*].Instances[*].PublicIpAddress' \
+            --filters "Name=tag:project,Values=udapeople" \
+            --output text)
+            echo BACKEND_IP
+            cd frontend
+            export API_URL="http://${BACKEND_IP}:3030"
+            echo "${API_URL}"
+            npm install 
+            npm run build
+      - run:
+          name: Deploy frontend objects
+          command: |
+            aws s3 cp frontend/dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7}/ --recursive
+      # Here's where you will add some code to rollback on failure
 workflows:
   default:
     jobs:
-      # - deploy-infrastructure
-      # - configure-infrastructure:
-      #     requires:
-      #       - deploy-infrastructure
+      - deploy-infrastructure
+      - configure-infrastructure:
+          requires:
+            - deploy-infrastructure
       - run-migrations
-      # - build-frontend
+      - build-frontend
       # - build-backend
       # - test-frontend:
       #     requires: [build-frontend]
