@@ -285,7 +285,8 @@ workflows:
             - deploy-infrastructure
       - run-migrations:
           requires: [configure-infrastructure]
-      - deploy-frontend: requires:[run-migrations]
+      - deploy-frontend:
+          requires: [run-migrations]
       # - build-backend
       # - test-frontend:
       #     requires: [build-frontend]
