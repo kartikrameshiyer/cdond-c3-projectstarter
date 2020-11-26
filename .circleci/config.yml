@@ -254,8 +254,9 @@ jobs:
           command: |
             yum install tar -y
             yum install gzip -y
-            yum install python-pip -y
-            yum install nodejs -y
+            yum install python3-pip -y
+            yum install --assumeyes epel-release -y
+            yum install --assumeyes nodejs -y
       - run:
           name: Get backend url
           command: |
