@@ -210,14 +210,14 @@ jobs:
             echo TYPEORM_MIGRATIONS_DIR=$TYPEORM_MIGRATIONS_DIR >> "backend/.env"
             echo TYPEORM_ENTITIES=$TYPEORM_ENTITIES >> "backend/.env"
             echo TYPEORM_MIGRATIONS=$TYPEORM_MIGRATION >> "backend/.env"
-            echo TYPEORM_HOST=$TYPEORM_HOST>> "backend/.env"
+            echo TYPEORM_HOST=$TYPEORM_HOST >> "backend/.env"
             echo TYPEORM_PORT=$TYPEORM_PORT >> "backend/.env"
             echo TYPEORM_USERNAME=$YPEORM_USERNAME >> "backend/.env"
             echo TYPEORM_PASSWORD=$TYPEORM_PASSWORD >> "backend/.env"
             echo TYPEORM_DATABASE=$TYPEORM_DATABASE >> "backend/.env" 
 
             ansible-playbook -i .circleci/ansible/inventory .circleci/ansible/configure-server.yml
-
+      - run: cat backend/.env
       - destroy-environment
   run-migrations:
     docker:
