@@ -300,10 +300,20 @@ jobs:
           command: |
             apk add --update ansible
       - run:
+          name: installing aws cli
+          command: |
+          apk add --no-cache \
+          python3 \
+          py3-pip \
+          && pip3 install --upgrade pip \
+          && pip3 install \
+          awscli \
+          && rm -rf /var/cache/apk/*
+      - run:
           name: Deploy backend
           no_output_timeout: 30m
           command: |
-            cat ./backend/.env
+            
             ansible-playbook -i .circleci/ansible/inventory .circleci/ansible/deploy-backend.yml
       - destroy-environment
       # Here's where you will add some code to rollback on failure
@@ -311,16 +321,16 @@ jobs:
 workflows:
   default:
     jobs:
-      - deploy-infrastructure
-      - configure-infrastructure:
-          requires:
-            - deploy-infrastructure
-      - run-migrations:
-          requires: [configure-infrastructure]
-      - deploy-frontend:
-          requires: [run-migrations]
-      - deploy-backend:
-          requires: [run-migrations]
+      # - deploy-infrastructure
+      # - configure-infrastructure:
+      #     requires:
+      #       - deploy-infrastructure
+      # - run-migrations:
+      #     requires: [configure-infrastructure]
+      # - deploy-frontend:
+      #     requires: [run-migrations]
+      - deploy-backend
+          
       # - build-backend
       # - test-frontend:
       #     requires: [build-frontend]
