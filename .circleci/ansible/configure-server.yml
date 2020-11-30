@@ -3,7 +3,6 @@
   hosts: web
   user: ubuntu
   gather_facts: false
-  ansible_connection = ssh
   vars:
     - ansible_python_interpreter: /usr/bin/python3
     - ansible_host_key_checking: false
