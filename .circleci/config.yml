@@ -299,6 +299,10 @@ jobs:
           name: Install dependencies
           command: |
             apk add --update ansible
+      - run:
+          name: installing shell
+          command: |
+            apk add openssh-client
       - run: cat .circleci/ansible/inventory
       - run:
           name: Deploy backend
