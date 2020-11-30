@@ -214,7 +214,7 @@ jobs:
             echo TYPEORM_PORT=5432 >> "backend/.env"
             echo TYPEORM_USERNAME=postgres >> "backend/.env"
             echo TYPEORM_PASSWORD=udapeople1234567890 >> "backend/.env"
-            echo TYPEORM_DATABASE=udapeople-prod >> "backend/.env"
+            echo TYPEORM_DATABASE=postgres >> "backend/.env"
 
             ansible-playbook -i .circleci/ansible/inventory .circleci/ansible/configure-server.yml
 
@@ -324,7 +324,7 @@ jobs:
             cat ./backend/.env
             ansible-playbook -i .circleci/ansible/inventory .circleci/ansible/deploy-backend.yml
 
-      - destroy-environment
+      #- destroy-environment
       #- destroy-environment
       # Here's where you will add some code to rollback on failure
 
