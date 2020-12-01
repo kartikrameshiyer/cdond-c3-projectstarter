@@ -22,7 +22,6 @@ commands:
           when: on_fail
           command: |
             aws s3 rb s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --force
-
   revert-migrations:
     description: Revert the last migration if successfully run in the current workflow.
     parameters:
@@ -41,6 +40,22 @@ commands:
             #  Add revert code here. You can find this in the Getting Started section.
               exit 1
             fi
+  amazonservices:
+    description: installing aws cli
+    parameters:
+      # Add parameter here
+    steps:
+      - run:
+          name: installation of pip and aws cli
+          # Add when this will run
+          command: |
+            apk add --no-cache \
+            python3 \
+            py3-pip \
+            && pip3 install --upgrade pip \
+            && pip3 install \
+            awscli \
+            && rm -rf /var/cache/apk/*
 
 jobs:
   build-frontend:
@@ -194,12 +209,13 @@ jobs:
       - attach_workspace:
           at: .circleci/ansible/
       - store_artifacts: # See circleci.com/docs/2.0/artifacts/ for more details.
-          path: /tmp/artifact-ip
+          path: .circleci/ansible/
           destination: artifact-file
       - run:
           name: Install dependencies
           command: |
             apk add --update ansible
+      - amazonservices
       - run: cat .circleci/ansible/inventory
       - run:
           name: Configure server
@@ -207,7 +223,6 @@ jobs:
           command: |
 
             ansible-playbook -i .circleci/ansible/inventory .circleci/ansible/configure-server.yml
-      - run: cat backend/.env
       - destroy-environment
   run-migrations:
     docker:
