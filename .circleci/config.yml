@@ -354,7 +354,7 @@ jobs:
             backend_ip=$(cat ./.circleci/ansible/backendip)
             echo "http://$backend_ip:3030"
       - run:
-          name: Backend smoke test
+          name: Backend smoke test.
           command: |
             if curl -s --head "http://$backend_ip:3030/api/status" 
             then
