@@ -343,6 +343,11 @@ jobs:
       - attach_workspace:
           at: .circleci/ansible/
       - run:
+          name: Install dependencies
+          command: |
+            apk --no-cache add curl
+
+      - run:
           name: Get backend url
           command: |
             cat ./.circleci/ansible/backendip
