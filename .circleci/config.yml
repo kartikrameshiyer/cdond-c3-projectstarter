@@ -346,7 +346,7 @@ jobs:
           name: Get backend url
           command: |
             cat ./.circleci/ansible/backendip
-            backend_ip = $(cat ./.circleci/ansible/backendip)
+            backend_ip=$(cat ./.circleci/ansible/backendip)
             echo "http://$backend_ip:3030"
       - run:
           name: Backend smoke test
