@@ -6,7 +6,7 @@ defaults: &defaults
 
 commands:
   destroy-environment:
-    description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
+    description: Destroy back-end and front-end cloudformation stacks given a workflow ID and S3 bucket.
     parameters:
       # Add parameter here
     steps:
