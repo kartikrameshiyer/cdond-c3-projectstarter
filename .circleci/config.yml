@@ -326,6 +326,8 @@ jobs:
           no_output_timeout: 30m
           command: |
             cat .circleci/ansible/inventory
+            printenv >> ./backend/.env
+            cat ./backend/.env
             ansible-playbook -i .circleci/ansible/inventory .circleci/ansible/deploy-backend.yml
 
       - destroy-environment
