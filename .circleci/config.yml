@@ -356,7 +356,7 @@ jobs:
       - run:
           name: Backend smoke test
           command: |
-            if curl -s --head "https://$backend_ip:3030/api/status" 
+            if curl -s --head "http://$backend_ip:3030/api/status" 
             then
               return 0
             else
@@ -372,6 +372,7 @@ jobs:
               return 1
             fi
       - destroy-environment
+      - revert-migrations
 workflows:
   default:
     jobs:
