@@ -275,10 +275,10 @@ jobs:
             --query 'Reservations[*].Instances[*].PublicIpAddress' \
             --filters "Name=tag:project,Values=udapeople" \
             --output text)
-            echo BACKEND_IP
+            echo $BACKEND_IP > ./.circleci/ansible/backendip
             cd frontend
             export API_URL="http://${BACKEND_IP}:3030"
-            echo "${API_URL}" > ./.circleci/ansible/backendip
+            echo "${API_URL}" 
             npm install 
             npm run build
       - persist_to_workspace:
