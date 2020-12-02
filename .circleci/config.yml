@@ -256,6 +256,10 @@ jobs:
       - image: amazon/aws-cli
     steps:
       - checkout
+      - persist_to_workspace:
+          root: .circleci/ansible/
+          paths:
+            - backendip
       - run:
           name: Install dependencies
           command: |
@@ -275,9 +279,12 @@ jobs:
             echo BACKEND_IP
             cd frontend
             export API_URL="http://${BACKEND_IP}:3030"
-            echo "${API_URL}"
+            echo "${API_URL}" > ./.circleci/ansible/backendip
             npm install 
             npm run build
+
+      - store_artifacts: # See circleci.com/docs/2.0/artifacts/ for more details.
+          path: .circleci/ansible/backendip
       - run:
           name: Deploy frontend objects
           command: |
@@ -311,13 +318,44 @@ jobs:
           no_output_timeout: 30m
           command: |
             cat .circleci/ansible/inventory
-            printenv >> ./backend/.env
-            cat ./backend/.env
             ansible-playbook -i .circleci/ansible/inventory .circleci/ansible/deploy-backend.yml
 
-      #- destroy-environment
+      - destroy-environment
       # Here's where you will add some code to rollback on failure
-
+  smoke-test:
+    docker:
+      image: python:3.7-alpine3.11
+      # Lightweight Docker image
+    steps:
+      # Checkout code from git
+      - checkout
+      - amazonservices
+      - attach_workspace:
+        at: .circleci/ansible/
+      - run:
+          name: Get backend url
+          command: |
+            backend_ip = $(cat backendip)
+            echo "http://$backend_ip:3030"
+      - run:
+          name: Backend smoke test.
+          command: |
+            if curl -s --head "https://$backend_ip/api/status" 
+            then
+              return 0
+            else
+              return 1
+            fi
+      - run:
+          name: Frontend smoke test.
+          command: |
+            if curl -s  "http://${CIRCLE_WORKFLOW_ID:0:7}.s3-website-us-west-2.amazonaws.com" | grep "Welcome"
+            then
+              return 1
+            else
+              return 1
+            fi
+      - destroy-environment
 workflows:
   default:
     jobs:
@@ -353,8 +391,8 @@ workflows:
           requires: [run-migrations]
       - deploy-backend:
           requires: [run-migrations]
-      # - smoke-test:
-      #     requires: [deploy-backend, deploy-frontend]
+      - smoke-test:
+          requires: [deploy-backend, deploy-frontend]
       # - cloudfront-update:
       #     requires: [smoke-test]
       # - cleanup:
