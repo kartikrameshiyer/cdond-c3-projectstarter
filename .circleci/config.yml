@@ -30,15 +30,17 @@ commands:
       - run:
           name: Revert migrations
           # Add when this will run
+          when: on_fail
           command: |
-            # Curl command here to see if there was a successful migration associated with the workflow id, store result in SUCCESS variable
-            SUCCESS = 1
-            if(( $SUCCESS==1 )); 
+            statuscheck=$(curl -H "token: 6a66518b-5126-4167-940b-5ad96c7eac05" --request GET https://api.memstash.io/values/hello_
+
+            if(( $statuscheck=="true")); 
             then
-            #  cd ~/project/backend
-            #  npm install
-            #  Add revert code here. You can find this in the Getting Started section.
-              exit 1
+            echo "Reverting the changes"
+            npm install
+            npm run migrations:revert
+            else
+            echo "no migration occured"           
             fi
   amazonservices:
     description: installing aws cli
@@ -256,10 +258,6 @@ jobs:
       - image: amazon/aws-cli
     steps:
       - checkout
-      - persist_to_workspace:
-          root: .circleci/ansible/
-          paths:
-            - backendip
       - run:
           name: Install dependencies
           command: |
@@ -269,6 +267,11 @@ jobs:
             yum -y install curl -y
             curl -sL https://rpm.nodesource.com/setup_10.x | bash -
             yum install -y nodejs
+
+      - persist_to_workspace:
+          root: .circleci/ansible/
+          paths:
+            - backendip
       - run:
           name: Get backend url
           command: |
