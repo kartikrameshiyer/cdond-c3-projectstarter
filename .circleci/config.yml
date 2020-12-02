@@ -345,7 +345,7 @@ jobs:
       - run:
           name: Get backend url
           command: |
-            backend_ip = $(cat backendip)
+            backend_ip = $(cat ./.circleci/ansible/backendip)
             echo "http://$backend_ip:3030"
       - run:
           name: Backend smoke test.
@@ -369,6 +369,7 @@ jobs:
 workflows:
   default:
     jobs:
+      - smoke-test
       #********** testing Jobs******
       # - deploy-infrastructure
       # - configure-infrastructure:
@@ -380,29 +381,29 @@ workflows:
       # #     requires: [run-migrations]
       # - deploy-backend:
       #     requires: [run-migrations]
-      # ******** Testing End**********
-      - build-frontend
-      - build-backend
-      - test-frontend:
-          requires: [build-frontend]
-      - test-backend:
-          requires: [build-backend]
-      - scan-backend:
-          requires: [build-backend]
-      - scan-frontend:
-          requires: [build-frontend]
-      - deploy-infrastructure:
-          requires: [test-frontend, test-backend, scan-frontend, scan-backend]
-      - configure-infrastructure:
-          requires: [deploy-infrastructure]
-      - run-migrations:
-          requires: [configure-infrastructure]
-      - deploy-frontend:
-          requires: [run-migrations]
-      - deploy-backend:
-          requires: [run-migrations]
-      - smoke-test:
-          requires: [deploy-backend, deploy-frontend]
+      # # ******** Testing End**********
+      # - build-frontend
+      # - build-backend
+      # - test-frontend:
+      #     requires: [build-frontend]
+      # - test-backend:
+      #     requires: [build-backend]
+      # - scan-backend:
+      #     requires: [build-backend]
+      # - scan-frontend:
+      #     requires: [build-frontend]
+      # - deploy-infrastructure:
+      #     requires: [test-frontend, test-backend, scan-frontend, scan-backend]
+      # - configure-infrastructure:
+      #     requires: [deploy-infrastructure]
+      # - run-migrations:
+      #     requires: [configure-infrastructure]
+      # - deploy-frontend:
+      #     requires: [run-migrations]
+      # - deploy-backend:
+      #     requires: [run-migrations]
+      # - smoke-test:
+      #     requires: [deploy-backend, deploy-frontend]
       # - cloudfront-update:
       #     requires: [smoke-test]
       # - cleanup:
