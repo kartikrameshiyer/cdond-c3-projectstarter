@@ -21,7 +21,8 @@ commands:
           name: Deleting the S3 bucket and files
           when: on_fail
           command: |
-            aws s3 rb s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --force
+            aws s3 rm s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
+
   revert-migrations:
     description: Revert the last migration if successfully run in the current workflow.
     parameters:
