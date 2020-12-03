@@ -33,7 +33,7 @@ commands:
           # Add when this will run
           when: on_fail
           command: |
-            statuscheck=$(curl -H "token: 6a66518b-5126-4167-940b-5ad96c7eac05" --request GET https://api.memstash.io/values/hello_
+            statuscheck=$(curl -H "token: ${CIRCLE_WORKFLOW_ID:0:7}" --request GET https://api.memstash.io/values/<< pipeline.id >>_migrations)
 
             if(( $statuscheck=="true")); 
             then
@@ -356,12 +356,8 @@ jobs:
       - run:
           name: Backend smoke test.
           command: |
-            if curl -s --head "http://$backend_ip:3030/api/status" 
-            then
-              return 0
-            else
-              return 1
-            fi
+            curl -s --head "http://$backend_ip:3030/api/status"
+
       - run:
           name: Frontend smoke test.
           command: |
