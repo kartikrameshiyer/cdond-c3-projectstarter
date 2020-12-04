@@ -348,27 +348,23 @@ jobs:
             apk --no-cache add curl
 
       - run:
-          name: Get backend url
+          name: Smoke Test and get backend URL
           command: |
             cat ./.circleci/ansible/backendip
             backend_ip=$(cat ./.circleci/ansible/backendip)
             echo "http://$backend_ip:3030"
-      - run:
-          name: Backend smoke test.
-          command: |
             curl "http://$backend_ip:3030/api/status"
-
       - run:
           name: Frontend smoke test.
           command: |
             if curl -s  "http://udapeople-${CIRCLE_WORKFLOW_ID:0:7}.s3-website-us-west-2.amazonaws.com" | grep "Welcome"
             then
-              return 1
+              return 0
             else
               return 1
             fi
-      - destroy-environment
-      - revert-migrations
+      # - destroy-environment
+      # - revert-migrations
 workflows:
   default:
     jobs:
