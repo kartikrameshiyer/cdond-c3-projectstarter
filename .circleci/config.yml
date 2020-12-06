@@ -230,6 +230,7 @@ jobs:
     steps:
       - checkout
       - run: cd backend && npm install
+      - amazonservices
       - run:
           name: Run migrations
           no_output_timeout: 10m
@@ -363,8 +364,50 @@ jobs:
             else
               return 1
             fi
-      # - destroy-environment
-      # - revert-migrations
+      - destroy-environment
+      - revert-migrations
+  cloudfront-update:
+    docker:
+      - image: amazon/aws-cli
+    steps:
+      - checkout
+      - run:
+          name: Install dependencies
+          command: |
+            yum install tar -y
+            yum install gzip -y
+      - run:
+          name: Update cloudfront distribution
+          command: |
+            aws cloudformation deploy \
+            --template-file file://./.circleci/files/cloudfront.yml \
+            --stack-name "udapeople-${CIRCLE_WORKFLOW_ID:0:7}" \
+            --parameter-overrides WorkflowID="${CIRCLE_WORKFLOW_ID:0:7}"
+      - destroy-environment
+      - revert-migrations
+  clean-up:
+    docker:
+      - image: amazon/aws-cli
+    steps:
+      - checkout
+      - run:
+          name: Install dependencies
+          command: |
+            yum install tar -y
+            yum install gzip -y
+
+      - run:
+          name: cleaning up the stack.
+          command: |
+            export OldWorkflowID=$(aws cloudformation \
+                  list-exports --query "Exports[?Name==\`WorkflowID\`].Value" \
+                  --no-paginate --output text)
+
+            aws s3 rm s3://udapeople-${OldWorkflowID} --recursive
+            aws cloudformation delete-stack --stack-name udapeople-frontend${OldWorkflowID}
+            aws cloudformation delete-stack --stack-name udapeople-backend-prod${OldWorkflowID} 
+            echo "stack deleted succesfully"
+
 workflows:
   default:
     jobs:
