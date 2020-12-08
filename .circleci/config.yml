@@ -230,7 +230,6 @@ jobs:
     steps:
       - checkout
       - run: cd backend && npm install
-      - amazonservices
       - run:
           name: Run migrations
           no_output_timeout: 10m
