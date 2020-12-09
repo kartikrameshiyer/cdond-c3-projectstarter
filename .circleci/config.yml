@@ -80,7 +80,7 @@ jobs:
           paths: [frontend/node_modules]
           key: frontend-build
       - slack/notify:
-          event: fail
+          event: always
           template: basic_fail_1
   build-backend:
     <<: *defaults
@@ -383,7 +383,7 @@ jobs:
       - destroy-environment
       - revert-migrations
       - slack/notify:
-          event: pass
+          event: always
           template: basic_fail_1
   cloudfront-update:
     docker:
@@ -422,13 +422,11 @@ jobs:
             export OldWorkflowID=$(aws cloudformation \
                   list-exports --query "Exports[?Name==\`WorkflowID\`].Value" \
                   --no-paginate --output text)
-            if [ -n "${OldWorkflowID}" ]
-            then
-            aws s3 rm s3://udapeople-${OldWorkflowID} --recursive
+
+            aws s3 rb s3://udapeople-${OldWorkflowID} --force
             aws cloudformation delete-stack --stack-name udapeople-frontend${OldWorkflowID}
             aws cloudformation delete-stack --stack-name udapeople-backend-prod${OldWorkflowID} 
             echo "stack deleted succesfully"
-            fi
 
 workflows:
   default:
