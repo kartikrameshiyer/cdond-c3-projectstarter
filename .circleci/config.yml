@@ -202,6 +202,9 @@ jobs:
             - inventory
       - run: pwd
       - run: cat ~/project/.circleci/ansible/inventory
+      - slack/notify:
+          event: pass
+          template: basic_fail_1
       - destroy-environment
       # Here's where you will add some code to rollback on failure
   configure-infrastructure:
@@ -389,7 +392,7 @@ jobs:
       - run:
           name: Update cloudfront distribution
           command: |
-            aws cloudformation create-stack \
+            aws cloudformation deploy \
             --template-file .circleci/files/cloudfront.yml \
             --stack-name "udapeoples3" \
             --parameter-overrides WorkflowID="${CIRCLE_WORKFLOW_ID:0:7}"
