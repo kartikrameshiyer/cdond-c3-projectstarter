@@ -168,6 +168,8 @@ jobs:
           command: |
             yum install tar -y
             yum install gzip -y
+            yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+            yum install jq -y
       - run:
           name: Ensure back-end infrastructure exists
           command: |
