@@ -428,7 +428,7 @@ jobs:
             echo "stack deleted succesfully"
             fi
       - slack/notify:
-          event: pass
+          event: fail
           template: basic_fail_1
 
 workflows:
