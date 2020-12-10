@@ -123,7 +123,7 @@ jobs:
           event: pass
           template: success_tagged_deploy_1
       - slack/notify:
-          event: pass
+          event: fail
           template: basic_fail_1
       # Checkout code from git
       # Restore from cache
@@ -216,8 +216,11 @@ jobs:
       - run: pwd
       - run: cat ~/project/.circleci/ansible/inventory
       - slack/notify:
-          event: pass
+          event: fail
           template: basic_fail_1
+      - slack/notify:
+          event: pass
+          template: success_tagged_deploy_1
       - destroy-environment
       # Here's where you will add some code to rollback on failure
   configure-infrastructure:
@@ -437,7 +440,7 @@ jobs:
 
             echo $OldWorkflowID
             echo $STACKS
-            if [["${STACKS[@]}" =~ "${OldWorkflowID}" ]]
+            if [ -n "${OldWorkflowID}" ]
             then 
             aws s3 rb s3://udapeople-${OldWorkflowID} --force
             aws cloudformation delete-stack --stack-name udapeople-frontend${OldWorkflowID}
