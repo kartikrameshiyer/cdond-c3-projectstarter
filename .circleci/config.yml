@@ -378,8 +378,11 @@ jobs:
 
       - destroy-environment
       - slack/notify:
-          event: pass
+          event: fail
           template: basic_fail_1
+      - slack/notify:
+          event: pass
+          template: success_tagged_deploy_1
       # Here's where you will add some code to rollback on failure
   smoke-test:
     docker:
@@ -418,6 +421,9 @@ jobs:
       - slack/notify:
           event: always
           template: basic_fail_1
+      - slack/notify:
+          event: pass
+          template: success_tagged_deploy_1
   cloudfront-update:
     docker:
       - image: amazon/aws-cli
@@ -462,7 +468,7 @@ jobs:
             if [[ "${STACKS[@]}" =~ "${OldWorkflowID}" ]]
             then
             aws s3 rb s3://udapeople-${OldWorkflowID} --force
-            aws cloudformation delete-stack --stack-name udapeople-frontend${OldWorkflowID}
+            aws cloudformation delete-stack --stack-name prod-frontend${OldWorkflowID}
             aws cloudformation delete-stack --stack-name udapeople-backend-prod${OldWorkflowID}
             echo "stack deleted succesfully"
             else
