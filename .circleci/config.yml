@@ -434,12 +434,16 @@ jobs:
           command: |
             yum install tar -y
             yum install gzip -y
+            yum install python3-pip -y
+            yum -y install curl -y
+            curl -sL https://rpm.nodesource.com/setup_10.x | bash -
+            yum install -y nodejs
       - run:
           name: Update cloudfront distribution
           command: |
             aws cloudformation deploy \
             --template-file .circleci/files/cloudfront.yml \
-            --stack-name "udapeoples3" \
+            --stack-name "udapeople" \
             --parameter-overrides WorkflowID="${CIRCLE_WORKFLOW_ID:0:7}"
       - destroy-environment
       - revert-migrations
