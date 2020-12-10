@@ -450,7 +450,7 @@ workflows:
     jobs:
       #- smoke-test
       #********** testing Jobs******
-      # - deploy-infrastructure
+      - deploy-infrastructure
       # - configure-infrastructure:
       #     requires:
       #       - deploy-infrastructure
@@ -464,7 +464,9 @@ workflows:
       #     requires: [deploy-backend, deploy-frontend]
       # - cloudfront-update:
       #     requires: [smoke-test]
-      - clean-up
+      - clean-up:
+          requires: [deploy-infrastructure]
+
         # requires: [cloudfront-update]
       # # ******** Testing End**********
       # - build-frontend
