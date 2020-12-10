@@ -80,8 +80,11 @@ jobs:
           paths: [frontend/node_modules]
           key: frontend-build
       - slack/notify:
-          event: always
+          event: fail
           template: basic_fail_1
+      - slack/notify:
+          event: pass
+          template: success_tagged_deploy_1
   build-backend:
     <<: *defaults
     steps:
@@ -100,6 +103,9 @@ jobs:
       - slack/notify:
           event: pass
           template: basic_fail_1
+      - slack/notify:
+          event: pass
+          template: success_tagged_deploy_1
   test-frontend:
     <<: *defaults
     steps:
@@ -113,7 +119,12 @@ jobs:
             npm i 
             npm install jest 
             npm run test
-
+      - slack/notify:
+          event: pass
+          template: success_tagged_deploy_1
+      - slack/notify:
+          event: pass
+          template: basic_fail_1
       # Checkout code from git
       # Restore from cache
       # Your job code here
@@ -421,14 +432,18 @@ jobs:
             export OldWorkflowID=$(aws cloudformation \
                   list-exports --query "Exports[?Name==\`WorkflowID\`].Value" \
                   --no-paginate --output text)
-            if[$OldWorkflowID==${CIRCLE_WORKFLOW_ID:0:7}]
+            export STACKS=($(aws cloudformation list-stacks --query "StackSummaries[*].StackName" \
+                  --stack-status-filter CREATE_COMPLETE --no-paginate --output text)) 
+
+            echo OldWorkflowID
+            echo STACKS
+            if [["${STACKS[@]}" =~ "${OldWorkflowID}" ]]
             then 
-            echo " Its the same workflow doing nothing"
-            else
             aws s3 rb s3://udapeople-${OldWorkflowID} --force
             aws cloudformation delete-stack --stack-name udapeople-frontend${OldWorkflowID}
             aws cloudformation delete-stack --stack-name udapeople-backend-prod${OldWorkflowID} 
             echo "stack deleted succesfully"
+            fi
 
 workflows:
   default:
